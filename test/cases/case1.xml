@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<yml_catalog date="2023-10-24T07:50:01+03:00">
+  <shop>
+    <name>dc-electro</name>
+
+    <company>dc-electro.ru</company>
+
+    <currencies>
+      <currency id="USD" rate="100"/>
+      <currency id="RUR" rate="1"/>
+    </currencies>
+
+    <categories>
+      <category id="1">Источники света</category>
+      <category id="2" parentId="1">Ламыпы галогенные</category>
+      <category id="3" parentId="1">Ламыпы накаливания</category>
+    </categories>
+
+    <offers>
+      <offer id="1">
+        <name>Лампа светодиодная №1</name>
+        <url>example.com/1</url>
+        <price>66</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>2</categoryId>
+        <vendor>IN HOME</vendor>
+        <vendorCode>12345</vendorCode>
+        <param name="ID">1</param>
+        <param name="Штрихкод">12345</param>
+      </offer>
+      <offer id="2">
+        <name>Лампа светодиодная №2</name>
+        <url>example.com/2</url>
+        <price>67</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>2</categoryId>
+        <vendor>IN HOME</vendor>
+        <vendorCode>12346</vendorCode>
+        <param name="ID">2</param>
+        <param name="Штрихкод">12346</param>
+      </offer>
+      <offer id="3">
+        <name>Лампа светодиодная №3</name>
+        <url>example.com/3</url>
+        <price>68</price>
+        <currencyId>RUR</currencyId>
+        <categoryId>3</categoryId>
+        <vendor>IN HOME</vendor>
+        <vendorCode>12347</vendorCode>
+        <param name="ID">2</param>
+        <param name="Штрихкод">12347</param>
+      </offer>
+    </offers>
+  </shop>
+</yml_catalog>

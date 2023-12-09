@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE yml_catalog SYSTEM "shops.dtd">
+<catalog date="2023-10-24T07:50:01+03:00">
+  <shop>
+    <name>dc-electro</name>
+    <currency id="USD" rate="100">Доллар США</currency>
+    <currency id="RUR" rate="1">Рубль</currency>
+  </shop>
+</catalog>
