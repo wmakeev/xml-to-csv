@@ -5,18 +5,20 @@ import {
   XmlCsvMapping,
   XmlCsvMappingInternal,
   XmlCsvMappingInternalColl,
-  XmlCsvMappingPredicate,
-  XmlCsvMappingPredicateConfig
+  XmlCsvMappingPredicateRecord
 } from './types.js'
 
-const filters: Record<
-  string,
-  (config: XmlCsvMappingPredicateConfig) => XmlCsvMappingPredicate
-> = {
+const predicates: XmlCsvMappingPredicateRecord = {
   equal:
     ({ path, value }) =>
     ctx => {
-      return ctx.lastElValue.get(path) === value
+      return ctx.elemLastValue.get(path) === value
+    },
+
+  index:
+    ({ path, value }) =>
+    (ctx, _, elPath) => {
+      return ctx.elemLastIndex.get(path ?? elPath) === value
     }
 }
 
@@ -27,20 +29,23 @@ export const getInternalCsvMapping = (
   mapping: XmlCsvMapping,
   delimiter: string
 ): XmlCsvMappingInternal => {
+  // TODO Нужно подумать над конфигурацией или подробно описать почему она такая
+  // какая есть; Возможно ввести полные и относительные пути, чтобы не дублировать пути.
+
   const collsMappings_tmp1 = mapping.colls.map((coll, index) => {
     const isInsideRowTag =
       mapping.row === coll.valuePath ||
       (coll.valuePath.startsWith(mapping.row) &&
         [delimiter, '['].includes(coll.valuePath.at(mapping.row.length) ?? ''))
 
-    const filter = coll.predicate
-      ? filters[coll.predicate.type]?.(coll.predicate)
+    const predicate = coll.predicate
+      ? predicates[coll.predicate.type]?.(coll.predicate as any)
       : undefined
 
     const val: XmlCsvMappingInternalColl = {
       index,
       name: coll.name,
-      predicate: filter,
+      predicate,
       defaultValue: coll.defaultValue ?? '',
       isOutOfRowTag: !isInsideRowTag
     }

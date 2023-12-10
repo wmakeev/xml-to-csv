@@ -171,6 +171,14 @@ test('parseXmlToCsvStreams #case1', async () => {
               path: 'yml_catalog/shop/offers/offer/param[name]',
               value: 'Штрихкод'
             }
+          },
+          {
+            name: 'Характеристика#2',
+            valuePath: 'yml_catalog/shop/offers/offer/param',
+            predicate: {
+              type: 'index',
+              value: 1
+            }
           }
         ]
       }
@@ -199,10 +207,19 @@ test('parseXmlToCsvStreams #case1', async () => {
   assert.deepStrictEqual(
     offerCsv,
     [
-      ['Магазин', 'ID', 'Код', 'Валюта', 'Категория', 'ID (param)', 'Штрихкод'],
-      ['dc-electro', '1', '1', 'RUR', '2', '1', '12345'],
-      ['dc-electro', '2', '2', 'RUR', '2', '2', '12346'],
-      ['dc-electro', '3', '3', 'RUR', '3', '2', '12347']
+      [
+        'Магазин',
+        'ID',
+        'Код',
+        'Валюта',
+        'Категория',
+        'ID (param)',
+        'Штрихкод',
+        'Характеристика#2'
+      ],
+      ['dc-electro', '1', '1', 'RUR', '2', '1', '12345', '12345'],
+      ['dc-electro', '2', '2', 'RUR', '2', '2', '12346', '2'],
+      ['dc-electro', '3', '3', 'RUR', '3', '2', '12347', '12347']
     ],
     'should contain correct offer csv'
   )

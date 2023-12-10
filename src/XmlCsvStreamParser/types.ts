@@ -1,7 +1,19 @@
-export type XmlCsvMappingPredicateConfig = {
-  type: 'equal'
-  path: string
-  value: string
+export type XmlCsvMappingPredicateConfig =
+  | {
+      type: 'equal'
+      path: string
+      value: string
+    }
+  | {
+      type: 'index'
+      path?: string
+      value: number
+    }
+
+export type XmlCsvMappingPredicateRecord = {
+  [type in XmlCsvMappingPredicateConfig['type']]: (
+    predicate: Extract<XmlCsvMappingPredicateConfig, { type: type }>
+  ) => XmlCsvMappingPredicate
 }
 
 export interface XmlCsvMapping {
@@ -25,13 +37,15 @@ export interface XmlCsvMapping {
   }[]
 }
 
-export interface XmlCsvMappingFilterContext {
-  lastElValue: Map<string, string>
+export interface XmlCsvMappingPredicateContext {
+  elemLastValue: Map<string, string>
+  elemLastIndex: Map<string, number>
 }
 
 export type XmlCsvMappingPredicate = (
-  ctx: XmlCsvMappingFilterContext,
-  value: string
+  ctx: XmlCsvMappingPredicateContext,
+  value: string,
+  elPath: string
 ) => boolean
 
 export type XmlCsvMappingInternalColl = {

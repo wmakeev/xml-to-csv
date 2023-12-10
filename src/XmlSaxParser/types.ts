@@ -4,10 +4,10 @@ export interface XmlSaxParserOptions {
   debug?: boolean
 }
 
-export type XmlSaxParserElemHandler = (elName: string, level: number) => void
+export type XmlSaxParserElemHandler = (elPath: string, level: number) => void
 
 export type XmlSaxParserValueHandler = (
-  elName: string,
+  elPath: string,
   value: string,
   level: number
 ) => void

@@ -7,7 +7,7 @@ import { getInternalCsvMapping } from './getInternalCsvMapping.js'
 import {
   TableRow,
   XmlCsvMapping,
-  XmlCsvMappingFilterContext,
+  XmlCsvMappingPredicateContext,
   XmlCsvMappingInternal,
   XmlCsvMappingInternalColl
 } from './types.js'
@@ -34,22 +34,26 @@ export const bindParsing = (
     end: false
   })
 
-  const lastElValue: Map<string, string> = new Map()
+  const elemLastValue: Map<string, string> = new Map()
+  const elemLastIndex: Map<string, number> = new Map()
 
-  const ctx: XmlCsvMappingFilterContext = { lastElValue }
+  const ctx: XmlCsvMappingPredicateContext = { elemLastValue, elemLastIndex }
 
-  const collectionValueHandler: XmlSaxParserValueHandler = (elName, value) => {
+  const collectionValueHandler: XmlSaxParserValueHandler = (elPath, value) => {
     // Process value before row complete logic in case where row tag contain text
 
     //#region Value
-    lastElValue.set(elName, value)
+    elemLastValue.set(elPath, value)
+    elemLastIndex.set(elPath, (elemLastIndex.get(elPath) ?? -1) + 1)
 
-    const mappings = schema.collsMappings[elName]
+    const mappings = schema.collsMappings[elPath]
 
     let colls: XmlCsvMappingInternalColl[] | undefined = undefined
 
     if (mappings !== undefined) {
-      colls = mappings.filter(m => (m.predicate?.(ctx, value) ?? true) === true)
+      colls = mappings.filter(
+        m => (m.predicate?.(ctx, value, elPath) ?? true) === true
+      )
     }
 
     // Field value
@@ -70,7 +74,7 @@ export const bindParsing = (
     //#endregion
 
     // Row completed
-    if (schema.row === elName) {
+    if (schema.row === elPath) {
       container.rows[index]!.push(
         //
         {
@@ -79,11 +83,12 @@ export const bindParsing = (
         }
       )
       row = [...rowTemplate]
-      lastElValue.clear()
+      elemLastValue.clear()
+      elemLastIndex.clear()
     }
 
     // Table completed
-    else if (schema.collection === elName) {
+    else if (schema.collection === elPath) {
       container.rows[index]!.push({
         row: null,
         end: true
@@ -96,8 +101,8 @@ export const bindParsing = (
     }
   }
 
-  const rowStartHandler: XmlSaxParserElemHandler = elName => {
-    if (schema.row === elName) {
+  const rowStartHandler: XmlSaxParserElemHandler = elPath => {
+    if (schema.row === elPath) {
       row = [...rowTemplate]
     }
   }

@@ -1,2 +1,2 @@
-export * from './types.js'
+export type { XmlCsvMapping } from './types.js'
 export * from './parseXmlToCsvRows.js'

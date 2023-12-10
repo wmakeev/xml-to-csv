@@ -87,7 +87,7 @@ export class XmlSaxParser {
    * Add element handler
    *
    * ```js
-   * parser.onElem((elName, level) => {
+   * parser.onElem((elPath, level) => {
    *   // ...
    * })
    * ```
@@ -118,7 +118,7 @@ export class XmlSaxParser {
    * Add element value handler
    *
    * ```js
-   * parser.onValue((elName, val, level) => {
+   * parser.onValue((elPath, val, level) => {
    *   // ...
    * })
    * ```
@@ -163,7 +163,7 @@ export class XmlSaxParser {
 
     const tagsStack: string[] = []
 
-    let curElName: string = ''
+    let curElPath: string = ''
 
     let curElText: string[] = []
 
@@ -179,14 +179,14 @@ export class XmlSaxParser {
         case SaxEventType.OpenTagStart: {
           tagsStack.push((detail as Tag).name)
 
-          curElName = tagsStack.join(this.delimiter)
+          curElPath = tagsStack.join(this.delimiter)
           curElText = []
 
           for (let i = 0; i < this.#elemHandlers.length; i++) {
             // @ts-expect-error not null
             this.#elemHandlers[i](
               //
-              curElName,
+              curElPath,
               tagsStack.length
             )
           }
@@ -208,7 +208,7 @@ export class XmlSaxParser {
             // @ts-expect-error not null
             this.#valueHandlers[i](
               //
-              curElName,
+              curElPath,
 
               text,
               tagsStack.length
@@ -217,7 +217,7 @@ export class XmlSaxParser {
 
           tagsStack.pop()
 
-          curElName = tagsStack.join(this.delimiter)
+          curElPath = tagsStack.join(this.delimiter)
           curElText = []
 
           break
@@ -225,7 +225,7 @@ export class XmlSaxParser {
 
         // Attribute
         case SaxEventType.Attribute: {
-          const tagName = `${curElName}[${(detail as Attribute).name}]`
+          const tagName = `${curElPath}[${(detail as Attribute).name}]`
 
           for (let i = 0; i < this.#elemHandlers.length; i++) {
             // @ts-expect-error not null

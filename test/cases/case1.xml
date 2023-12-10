@@ -37,8 +37,8 @@
         <categoryId>2</categoryId>
         <vendor>IN HOME</vendor>
         <vendorCode>12346</vendorCode>
-        <param name="ID">2</param>
         <param name="Штрихкод">12346</param>
+        <param name="ID">2</param>
       </offer>
       <offer id="3">
         <name>Лампа светодиодная №3</name>
