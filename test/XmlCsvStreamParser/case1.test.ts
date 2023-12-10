@@ -25,11 +25,11 @@ test.skip('yml parse only', async () => {
     }
   }
 
-  let i = 0
+  let flushes = 0
 
   async function rowsConsume2(src: any) {
     for await (const it of src) {
-      i += it
+      flushes += it
     }
   }
 
@@ -68,9 +68,9 @@ test.skip('yml parse only', async () => {
 
   const duration = (Date.now() - timeStart) / 1000
 
-  console.log(i)
+  console.log(flushes)
 
-  console.log(`DONE (${duration}s).`)
+  console.log(`DONE (${duration}s).`) // 77.354s
 })
 
 test('parseXmlToCsvStreams #case1', async () => {
@@ -179,6 +179,28 @@ test('parseXmlToCsvStreams #case1', async () => {
               type: 'index',
               value: 1
             }
+          },
+          {
+            name: 'Характеристика#1',
+            valuePath: 'yml_catalog/shop/offers/offer/param',
+            aggregation: {
+              type: 'first'
+            }
+          },
+          {
+            name: 'Наименования характеристик',
+            valuePath: 'yml_catalog/shop/offers/offer/param[name]',
+            aggregation: {
+              type: 'array',
+              delimiter: ' | '
+            }
+          },
+          {
+            name: 'Значения характеристик',
+            valuePath: 'yml_catalog/shop/offers/offer/param',
+            aggregation: {
+              type: 'array'
+            }
           }
         ]
       }
@@ -215,11 +237,50 @@ test('parseXmlToCsvStreams #case1', async () => {
         'Категория',
         'ID (param)',
         'Штрихкод',
-        'Характеристика#2'
+        'Характеристика#2',
+        'Характеристика#1',
+        'Наименования характеристик',
+        'Значения характеристик'
       ],
-      ['dc-electro', '1', '1', 'RUR', '2', '1', '12345', '12345'],
-      ['dc-electro', '2', '2', 'RUR', '2', '2', '12346', '2'],
-      ['dc-electro', '3', '3', 'RUR', '3', '2', '12347', '12347']
+      [
+        'dc-electro',
+        '1',
+        '1',
+        'RUR',
+        '2',
+        '1',
+        '12345',
+        '12345',
+        '1',
+        'ID | Штрихкод',
+        '1,12345'
+      ],
+      [
+        'dc-electro',
+        '2',
+        '2',
+        'RUR',
+        '2',
+        '2',
+        '12346',
+        '2',
+        '12346',
+        'Штрихкод | ID',
+        '12346,2'
+      ],
+      [
+        'dc-electro',
+        '3',
+        '3',
+        'RUR',
+        '3',
+        '2',
+        '12347',
+        '12347',
+        '2',
+        'ID | Штрихкод',
+        '2,12347'
+      ]
     ],
     'should contain correct offer csv'
   )

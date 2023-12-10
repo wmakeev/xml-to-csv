@@ -34,17 +34,23 @@ export interface XmlCsvMapping {
 
     /** Default value in case if XML value is not defined */
     defaultValue?: string
+
+    /** Should collect values as array */
+    aggregation?:
+      | { type: 'first' }
+      | { type: 'last' }
+      | { type: 'array'; delimiter?: string; allowEmpty?: boolean }
   }[]
 }
 
 export interface XmlCsvMappingPredicateContext {
-  elemLastValue: Map<string, string>
-  elemLastIndex: Map<string, number>
+  elemValues: Map<string, string[]>
+  elemIndex: Map<string, number>
 }
 
 export type XmlCsvMappingPredicate = (
   ctx: XmlCsvMappingPredicateContext,
-  value: string,
+  elValue: string,
   elPath: string
 ) => boolean
 
@@ -54,6 +60,10 @@ export type XmlCsvMappingInternalColl = {
   predicate?: XmlCsvMappingPredicate | undefined
   defaultValue: string
   isOutOfRowTag: boolean
+  aggregation:
+    | { type: 'first' }
+    | { type: 'last' }
+    | { type: 'array'; delimiter: string; allowEmpty: boolean }
 }
 
 export interface XmlCsvMappingInternal {

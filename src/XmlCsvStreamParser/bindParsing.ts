@@ -34,17 +34,26 @@ export const bindParsing = (
     end: false
   })
 
-  const elemLastValue: Map<string, string> = new Map()
-  const elemLastIndex: Map<string, number> = new Map()
+  // const elemLastValue: Map<string, string> = new Map()
+  const elemValuesMap: Map<string, string[]> = new Map()
+  const elemIndexMap: Map<string, number> = new Map()
 
-  const ctx: XmlCsvMappingPredicateContext = { elemLastValue, elemLastIndex }
+  const ctx: XmlCsvMappingPredicateContext = {
+    elemValues: elemValuesMap,
+    elemIndex: elemIndexMap
+  }
 
-  const collectionValueHandler: XmlSaxParserValueHandler = (elPath, value) => {
+  const collectionValueHandler: XmlSaxParserValueHandler = (
+    elPath,
+    elValue
+  ) => {
     // Process value before row complete logic in case where row tag contain text
 
     //#region Value
-    elemLastValue.set(elPath, value)
-    elemLastIndex.set(elPath, (elemLastIndex.get(elPath) ?? -1) + 1)
+    const curElemValues = (elemValuesMap.get(elPath) ?? []).concat([elValue])
+
+    elemValuesMap.set(elPath, curElemValues)
+    elemIndexMap.set(elPath, (elemIndexMap.get(elPath) ?? -1) + 1)
 
     const mappings = schema.collsMappings[elPath]
 
@@ -52,7 +61,7 @@ export const bindParsing = (
 
     if (mappings !== undefined) {
       colls = mappings.filter(
-        m => (m.predicate?.(ctx, value, elPath) ?? true) === true
+        m => (m.predicate?.(ctx, elValue, elPath) ?? true) === true
       )
     }
 
@@ -62,7 +71,18 @@ export const bindParsing = (
         const coll = colls[i]
         if (coll === undefined) throw new Error('coll === undefined')
 
-        const _val = value === '' ? coll.defaultValue : value
+        let _val
+
+        if (coll.aggregation.type === 'first') {
+          _val = curElemValues[0]
+        } else if (coll.aggregation.type === 'last') {
+          _val = curElemValues[curElemValues.length - 1]
+        } else if (coll.aggregation.type === 'array') {
+          // TODO coll.aggregation.allowEmpty
+          _val = curElemValues.join(coll.aggregation.delimiter)
+        }
+
+        if (_val === '') _val = coll.defaultValue
 
         if (coll.isOutOfRowTag) {
           rowTemplate[coll.index] = _val
@@ -83,8 +103,8 @@ export const bindParsing = (
         }
       )
       row = [...rowTemplate]
-      elemLastValue.clear()
-      elemLastIndex.clear()
+      elemValuesMap.clear()
+      elemIndexMap.clear()
     }
 
     // Table completed

@@ -12,13 +12,13 @@ const predicates: XmlCsvMappingPredicateRecord = {
   equal:
     ({ path, value }) =>
     ctx => {
-      return ctx.elemLastValue.get(path) === value
+      return ctx.elemValues.get(path)?.at(-1) === value
     },
 
   index:
     ({ path, value }) =>
     (ctx, _, elPath) => {
-      return ctx.elemLastIndex.get(path ?? elPath) === value
+      return ctx.elemIndex.get(path ?? elPath) === value
     }
 }
 
@@ -42,12 +42,22 @@ export const getInternalCsvMapping = (
       ? predicates[coll.predicate.type]?.(coll.predicate as any)
       : undefined
 
+    const aggregation: XmlCsvMappingInternalColl['aggregation'] =
+      coll.aggregation?.type === 'array'
+        ? {
+            type: 'array',
+            delimiter: coll.aggregation.delimiter ?? ',',
+            allowEmpty: coll.aggregation.allowEmpty ?? false
+          }
+        : coll.aggregation ?? { type: 'last' }
+
     const val: XmlCsvMappingInternalColl = {
       index,
       name: coll.name,
       predicate,
       defaultValue: coll.defaultValue ?? '',
-      isOutOfRowTag: !isInsideRowTag
+      isOutOfRowTag: !isInsideRowTag,
+      aggregation
     }
 
     const entry: [string, XmlCsvMappingInternalColl] = [coll.valuePath, val]
