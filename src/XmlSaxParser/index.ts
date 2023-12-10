@@ -1,4 +1,3 @@
-import { compile } from 'html-to-text'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { Attribute, SAXParser, SaxEventType, Tag, Text } from 'sax-wasm'
@@ -59,21 +58,21 @@ export class XmlSaxParser {
 
   #parser: SAXParser | null = null
 
-  #htmlToText: (str: string) => string
+  // #htmlToText: (str: string) => string
 
   delimiter = '/'
 
   constructor(public options: XmlSaxParserOptions = {}) {
     this.delimiter = options.treeDelimiter ?? this.delimiter
 
-    this.#htmlToText = compile({
-      // TODO Временно. Надо подумать над этим.
-      preserveNewlines: false,
-      longWordSplit: {
-        forceWrapOnLimit: false
-      },
-      wordwrap: false
-    })
+    // this.#htmlToText = compile({
+    //   // TODO Временно. Надо подумать над этим.
+    //   preserveNewlines: false,
+    //   longWordSplit: {
+    //     forceWrapOnLimit: false
+    //   },
+    //   wordwrap: false
+    // })
   }
 
   #hasHandlers() {
@@ -197,13 +196,13 @@ export class XmlSaxParser {
 
         // CloseTag
         case SaxEventType.CloseTag: {
-          let text = curElText.join('').trim()
+          const text = curElText.join('').trim()
 
           // TODO По хорошему, такую трансфорацию должен делать сам парсер?
           // Или надо разобраться глубже в событиях
           // Это очень дорогая операция (из 120 секунд, на нее уходит около 30 сек)
           // Пример (код товара 16455): LED-драйвер 40Вт для панели SPL-4-40 PF&gt;0.98 без пульсаций
-          text = this.#htmlToText(text)
+          // text = this.#htmlToText(text)
 
           for (let i = 0; i < this.#valueHandlers.length; i++) {
             // @ts-expect-error not null

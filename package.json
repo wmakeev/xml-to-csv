@@ -63,6 +63,7 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^5.0.1",
+    "html-to-text": "^9.0.5",
     "lodash-es": "^4.17.21",
     "np": "^9.1.0",
     "prettier": "^3.1.0",
@@ -70,8 +71,6 @@
     "undici": "^6.0.1"
   },
   "dependencies": {
-    "@wmakeev/highland-tools": "^1.9.1",
-    "html-to-text": "^9.0.5",
     "sax-wasm": "^2.2.4"
   }
 }

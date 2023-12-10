@@ -1,11 +1,77 @@
 import { parse } from 'csv-parse/sync'
+import { stringify } from 'csv-stringify'
 import assert from 'node:assert'
 import { createReadStream, createWriteStream } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
+import {
+  // @ts-expect-error no typings
+  compose
+} from 'node:stream'
 import test from 'node:test'
 
-import { parseXmlToCsvStreams } from '../../src/index.js'
+import { parseXmlToCsvRows } from '../../src/index.js'
+import { ymlMappings } from './yml-mappings.js'
+
+test.skip('yml parse only', async () => {
+  const xmlReadable = createReadStream(
+    path.join(process.cwd(), '__temp/income/export_EFo.xml')
+  )
+
+  async function* rowsConsume(src: AsyncGenerator<string[][]>) {
+    for await (const it of src) {
+      it
+      yield 1
+    }
+  }
+
+  let i = 0
+
+  async function rowsConsume2(src: any) {
+    for await (const it of src) {
+      i += it
+    }
+  }
+
+  const composeWriteStream = (fileName: string) => {
+    fileName
+    return compose(rowsConsume, rowsConsume2)
+  }
+
+  const timeStart = Date.now()
+
+  await parseXmlToCsvRows(xmlReadable, [
+    // Currency
+    {
+      mapping: ymlMappings.currency,
+      writeable: composeWriteStream('Currency')
+    },
+
+    // Category
+    {
+      mapping: ymlMappings.category,
+      writeable: composeWriteStream('Category')
+    },
+
+    // Offers
+    {
+      mapping: ymlMappings.offer,
+      writeable: composeWriteStream('Offers')
+    },
+
+    // Offers photos
+    {
+      mapping: ymlMappings.offerPhoto,
+      writeable: composeWriteStream('Offers photos')
+    }
+  ])
+
+  const duration = (Date.now() - timeStart) / 1000
+
+  console.log(i)
+
+  console.log(`DONE (${duration}s).`)
+})
 
 test('parseXmlToCsvStreams #case1', async () => {
   const xmlReadable = createReadStream(
@@ -21,90 +87,95 @@ test('parseXmlToCsvStreams #case1', async () => {
     '__temp/output/case1_offer.csv'
   )
 
-  const csvWriteable1 = createWriteStream(CATEGORY_CSV_FILE)
-  const csvWriteable2 = createWriteStream(OFFER_CSV_FILE)
-
-  await parseXmlToCsvStreams(
-    [
-      {
-        writeable: csvWriteable1,
-        mapping: {
-          collection: 'yml_catalog/shop/categories',
-          row: 'yml_catalog/shop/categories/category',
-          colls: [
-            {
-              name: 'Магазин',
-              valuePath: 'yml_catalog/shop/name'
-            },
-            {
-              name: 'Код',
-              valuePath: 'yml_catalog/shop/categories/category[id]'
-            },
-            {
-              name: 'Внешний код',
-              valuePath: 'yml_catalog/shop/categories/category[id]'
-            },
-            {
-              name: 'Группа (Код)',
-              valuePath: 'yml_catalog/shop/categories/category[parentId]'
-            },
-            {
-              name: 'Наименование',
-              valuePath: 'yml_catalog/shop/categories/category'
-            }
-          ]
-        }
-      },
-      {
-        writeable: csvWriteable2,
-        mapping: {
-          collection: 'yml_catalog/shop/offers',
-          row: 'yml_catalog/shop/offers/offer',
-          colls: [
-            {
-              name: 'Магазин',
-              valuePath: 'yml_catalog/shop/name'
-            },
-            {
-              name: 'ID',
-              valuePath: 'yml_catalog/shop/offers/offer[id]'
-            },
-            {
-              name: 'Код',
-              valuePath: 'yml_catalog/shop/offers/offer[id]'
-            },
-            {
-              name: 'Валюта',
-              valuePath: 'yml_catalog/shop/offers/offer/currencyId'
-            },
-            {
-              name: 'Категория',
-              valuePath: 'yml_catalog/shop/offers/offer/categoryId'
-            },
-            {
-              name: 'ID (param)',
-              valuePath: 'yml_catalog/shop/offers/offer/param',
-              predicate: {
-                type: 'equal',
-                path: 'yml_catalog/shop/offers/offer/param[name]',
-                value: 'ID'
-              }
-            },
-            {
-              name: 'Штрихкод',
-              valuePath: 'yml_catalog/shop/offers/offer/param',
-              predicate: {
-                type: 'equal',
-                path: 'yml_catalog/shop/offers/offer/param[name]',
-                value: 'Штрихкод'
-              }
-            }
-          ]
-        }
+  async function* rowsFlatten(src: AsyncGenerator<string[][]>) {
+    for await (const rows of src) {
+      for (const row of rows) {
+        yield row
       }
-    ],
-    xmlReadable
-  )
+    }
+  }
+
+  const composeWriteStream = (fileName: string) =>
+    compose(rowsFlatten, stringify(), createWriteStream(fileName))
+
+  await parseXmlToCsvRows(xmlReadable, [
+    {
+      writeable: composeWriteStream(CATEGORY_CSV_FILE),
+      mapping: {
+        collection: 'yml_catalog/shop/categories',
+        row: 'yml_catalog/shop/categories/category',
+        colls: [
+          {
+            name: 'Магазин',
+            valuePath: 'yml_catalog/shop/name'
+          },
+          {
+            name: 'Код',
+            valuePath: 'yml_catalog/shop/categories/category[id]'
+          },
+          {
+            name: 'Внешний код',
+            valuePath: 'yml_catalog/shop/categories/category[id]'
+          },
+          {
+            name: 'Группа (Код)',
+            valuePath: 'yml_catalog/shop/categories/category[parentId]'
+          },
+          {
+            name: 'Наименование',
+            valuePath: 'yml_catalog/shop/categories/category'
+          }
+        ]
+      }
+    },
+    {
+      writeable: composeWriteStream(OFFER_CSV_FILE),
+      mapping: {
+        collection: 'yml_catalog/shop/offers',
+        row: 'yml_catalog/shop/offers/offer',
+        colls: [
+          {
+            name: 'Магазин',
+            valuePath: 'yml_catalog/shop/name'
+          },
+          {
+            name: 'ID',
+            valuePath: 'yml_catalog/shop/offers/offer[id]'
+          },
+          {
+            name: 'Код',
+            valuePath: 'yml_catalog/shop/offers/offer[id]'
+          },
+          {
+            name: 'Валюта',
+            valuePath: 'yml_catalog/shop/offers/offer/currencyId'
+          },
+          {
+            name: 'Категория',
+            valuePath: 'yml_catalog/shop/offers/offer/categoryId'
+          },
+          {
+            name: 'ID (param)',
+            valuePath: 'yml_catalog/shop/offers/offer/param',
+            predicate: {
+              type: 'equal',
+              path: 'yml_catalog/shop/offers/offer/param[name]',
+              value: 'ID'
+            }
+          },
+          {
+            name: 'Штрихкод',
+            valuePath: 'yml_catalog/shop/offers/offer/param',
+            predicate: {
+              type: 'equal',
+              path: 'yml_catalog/shop/offers/offer/param[name]',
+              value: 'Штрихкод'
+            }
+          }
+        ]
+      }
+    }
+  ])
 
   const categoryCsvTxt = await readFile(CATEGORY_CSV_FILE, 'utf8')
 
