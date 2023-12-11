@@ -157,7 +157,8 @@ export class XmlSaxParser {
       SaxEventType.Attribute |
         SaxEventType.OpenTagStart |
         SaxEventType.CloseTag |
-        SaxEventType.Text,
+        SaxEventType.Text |
+        SaxEventType.Cdata,
       { highWaterMark: this.options.highWaterMark ?? 64 * 1024 }
     )
 
@@ -251,8 +252,9 @@ export class XmlSaxParser {
           break
         }
 
-        // Text
-        case SaxEventType.Text: {
+        // Text | CDATA
+        case SaxEventType.Text:
+        case SaxEventType.Cdata: {
           curElText.push((detail as Text).value)
           break
         }
