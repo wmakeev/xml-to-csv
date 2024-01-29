@@ -1,5 +1,6 @@
-// TODO Remove lodash dep
-import { groupBy, mapValues } from 'lodash-es'
+// TODO Remove lodash dep?
+import groupBy from 'lodash.groupby'
+import mapValues from 'lodash.mapvalues'
 
 import {
   XmlCsvMapping,

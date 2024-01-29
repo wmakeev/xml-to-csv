@@ -1,2 +1,2 @@
-import './XmlCsvStreamParser/case1.test.js'
-import './XmlCsvStreamParser/case2.test.js'
+import './XmlToCsvTransform/case1.test.js'
+import './XmlToCsvTransform/case2.test.js'

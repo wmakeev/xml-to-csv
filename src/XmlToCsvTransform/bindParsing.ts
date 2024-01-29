@@ -2,10 +2,10 @@ import {
   XmlSaxParser,
   XmlSaxParserElemHandler,
   XmlSaxParserValueHandler
-} from '../XmlSaxParser/index.js'
+} from '../types/XmlSaxParser.js'
 import { getInternalCsvMapping } from './getInternalCsvMapping.js'
 import {
-  TableRow,
+  ParsedRowContainer,
   XmlCsvMapping,
   XmlCsvMappingPredicateContext,
   XmlCsvMappingInternal,
@@ -13,14 +13,13 @@ import {
 } from './types.js'
 
 export const bindParsing = (
-  container: { rows: TableRow[][] },
+  container: { rows: ParsedRowContainer[] },
   parser: XmlSaxParser,
-  index: number,
   mapping: XmlCsvMapping
 ) => {
   const schema: XmlCsvMappingInternal = getInternalCsvMapping(
     mapping,
-    parser.delimiter
+    parser.getDelimiter()
   )
 
   const rowTemplate: Array<string | undefined> = schema.collsNames.map(
@@ -29,7 +28,7 @@ export const bindParsing = (
 
   let row = [...rowTemplate]
 
-  container.rows[index]!.push({
+  container.rows.push({
     row: [...schema.collsNames],
     end: false
   })
@@ -95,7 +94,7 @@ export const bindParsing = (
 
     // Row completed
     if (schema.row === elPath) {
-      container.rows[index]!.push(
+      container.rows.push(
         //
         {
           row,
@@ -109,15 +108,14 @@ export const bindParsing = (
 
     // Table completed
     else if (schema.collection === elPath) {
-      container.rows[index]!.push({
+      container.rows.push({
         row: null,
         end: true
       })
 
       console.info(`Completed parsing "${schema.collection}" collection`)
 
-      parser.offValue(collectionValueHandler)
-      parser.offElem(rowStartHandler)
+      parser.removeHandlers()
     }
   }
 
@@ -127,6 +125,6 @@ export const bindParsing = (
     }
   }
 
-  parser.onElem(rowStartHandler)
-  parser.onValue(collectionValueHandler)
+  parser.setElemHanlder(rowStartHandler)
+  parser.setValueHandler(collectionValueHandler)
 }

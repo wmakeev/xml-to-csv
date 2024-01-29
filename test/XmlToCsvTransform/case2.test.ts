@@ -8,43 +8,43 @@ import {
   // @ts-expect-error no typings
   compose
 } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
 import test from 'node:test'
 
-import { parseXmlToCsvRows } from '../../src/index.js'
+import { createXmlToCsvTransformer } from '../../src/index.js'
 
-test('parseXmlToCsvStreams #case2', async () => {
-  const xmlReadable = createReadStream(
-    path.join(process.cwd(), 'test/cases/case2.xml')
-  )
-
-  const CASE2_CSV_FILE = path.join(process.cwd(), '__temp/output/case2.csv')
-
-  async function* rowsFlatten(src: AsyncGenerator<string[][]>) {
-    for await (const rows of src) {
-      for (const row of rows) {
-        yield row
-      }
+async function* rowsFlatten(src: AsyncGenerator<string[][]>) {
+  for await (const rows of src) {
+    for (const row of rows) {
+      yield row
     }
   }
+}
 
-  const composeWriteStream = (fileName: string) =>
-    compose(rowsFlatten, stringify(), createWriteStream(fileName))
+const composeWriteStream = (fileName: string) =>
+  compose(rowsFlatten, stringify(), createWriteStream(fileName))
 
-  await parseXmlToCsvRows(xmlReadable, [
-    {
-      writeable: composeWriteStream(CASE2_CSV_FILE),
-      mapping: {
-        collection: 'Корень',
-        row: 'Корень/Элемент',
-        colls: [
-          {
-            name: 'Описание',
-            valuePath: 'Корень/Элемент/Описание'
-          }
-        ]
-      }
-    }
-  ])
+test('createXmlToCsvTransformer #case2', async () => {
+  const CASE2_CSV_FILE = path.join(process.cwd(), '__temp/output/case2.csv')
+
+  await pipeline(
+    createReadStream(path.join(process.cwd(), 'test/cases/case2.xml'), {
+      encoding: 'utf8'
+    }),
+
+    createXmlToCsvTransformer({
+      collection: 'Корень',
+      row: 'Корень/Элемент',
+      colls: [
+        {
+          name: 'Описание',
+          valuePath: 'Корень/Элемент/Описание'
+        }
+      ]
+    }),
+
+    composeWriteStream(CASE2_CSV_FILE)
+  )
 
   const categoryCsvTxt = await readFile(CASE2_CSV_FILE, 'utf8')
 

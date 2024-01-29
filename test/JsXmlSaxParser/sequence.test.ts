@@ -1,18 +1,18 @@
 import path from 'node:path'
 import test from 'node:test'
-import { XmlSaxParser } from '../../src/XmlSaxParser/index.js'
+import { JsXmlSaxParser } from '../../src/JsXmlSaxParser/index.js'
 import { createReadStream } from 'node:fs'
 
 test('sequence', async () => {
   const xmlFile = path.join(process.cwd(), 'test/cases/case1.xml')
 
-  const parser = new XmlSaxParser({ highWaterMark: 64 * 1024 })
+  const parser = new JsXmlSaxParser()
 
-  parser.onElem(el => {
+  parser.setElemHanlder(el => {
     console.debug(`onElem: ${el}`)
   })
 
-  parser.onValue((el, val) => {
+  parser.setValueHandler((el, val) => {
     console.debug(`onValue: ${el} = "${val}"`)
   })
 

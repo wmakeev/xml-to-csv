@@ -75,9 +75,11 @@ export interface XmlCsvMappingInternal {
   collsNames: string[]
 }
 
-export type TableRow =
+export type CsvRow = (string | undefined)[]
+
+export type ParsedRowContainer =
   | {
-      row: (string | undefined)[]
+      row: CsvRow
       end: false
     }
   | {

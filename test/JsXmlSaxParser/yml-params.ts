@@ -1,29 +1,28 @@
 import path from 'node:path'
 
-import { XmlSaxParser } from '../../src/XmlSaxParser/index.js'
+import { JsXmlSaxParser } from '../../src/JsXmlSaxParser/index.js'
 import { createReadStream } from 'node:fs'
 
 const xmlFile = path.join(process.cwd(), '__temp/income/export_EFo.xml')
 // const xmlFile = path.join(process.cwd(), 'test/cases/test.xml')
 
-const parser = new XmlSaxParser({ highWaterMark: 64 * 1024 })
+const parser = new JsXmlSaxParser()
 
-const elMap: Map<string, number> = new Map()
+/** @type {Map<string, number>} */
+const paramsMap = new Map()
 
-parser.onElem(el => {
-  const count = elMap.get(el)
+parser.setValueHandler((el, val) => {
+  if (el !== 'yml_catalog/shop/offers/offer/param[name]') return
+
+  const count = paramsMap.get(val)
 
   if (count === undefined) {
-    console.log(el)
-    elMap.set(el, 1)
+    console.log(val)
+    paramsMap.set(val, 1)
   } else {
-    elMap.set(el, count + 1)
+    paramsMap.set(val, count + 1)
   }
 })
-
-// parser.onValue('yml_catalog.shop.categories.category', (val, el) => {
-//   console.log(el, val)
-// })
 
 await parser.start()
 
@@ -41,6 +40,6 @@ parser.stop()
 console.timeEnd('Parsing')
 
 console.log('\nStatistics:')
-for (const [key, value] of elMap.entries()) {
+for (const [key, value] of paramsMap.entries()) {
   console.log(key, value)
 }
