@@ -9,7 +9,7 @@ import {
   XmlCsvMapping,
   XmlCsvMappingPredicateContext,
   XmlCsvMappingInternal,
-  XmlCsvMappingInternalColl
+  XmlCsvMappingInternalCol
 } from './types.js'
 
 export const bindParsing = (
@@ -22,14 +22,14 @@ export const bindParsing = (
     parser.getDelimiter()
   )
 
-  const rowTemplate: Array<string | undefined> = schema.collsNames.map(
+  const rowTemplate: Array<string | undefined> = schema.colsNames.map(
     () => undefined
   )
 
   let row = [...rowTemplate]
 
   container.rows.push({
-    row: [...schema.collsNames],
+    row: [...schema.colsNames],
     end: false
   })
 
@@ -54,39 +54,39 @@ export const bindParsing = (
     elemValuesMap.set(elPath, curElemValues)
     elemIndexMap.set(elPath, (elemIndexMap.get(elPath) ?? -1) + 1)
 
-    const mappings = schema.collsMappings[elPath]
+    const mappings = schema.colsMappings[elPath]
 
-    let colls: XmlCsvMappingInternalColl[] | undefined = undefined
+    let cols: XmlCsvMappingInternalCol[] | undefined = undefined
 
     if (mappings !== undefined) {
-      colls = mappings.filter(
+      cols = mappings.filter(
         m => (m.predicate?.(ctx, elValue, elPath) ?? true) === true
       )
     }
 
     // Field value
-    if (colls !== undefined) {
-      for (let i = 0, len = colls.length; i < len; i++) {
-        const coll = colls[i]
-        if (coll === undefined) throw new Error('coll === undefined')
+    if (cols !== undefined) {
+      for (let i = 0, len = cols.length; i < len; i++) {
+        const col = cols[i]
+        if (col === undefined) throw new Error('coll === undefined')
 
         let _val
 
-        if (coll.aggregation.type === 'first') {
+        if (col.aggregation.type === 'first') {
           _val = curElemValues[0]
-        } else if (coll.aggregation.type === 'last') {
+        } else if (col.aggregation.type === 'last') {
           _val = curElemValues[curElemValues.length - 1]
-        } else if (coll.aggregation.type === 'array') {
+        } else if (col.aggregation.type === 'array') {
           // TODO coll.aggregation.allowEmpty
-          _val = curElemValues.join(coll.aggregation.delimiter)
+          _val = curElemValues.join(col.aggregation.delimiter)
         }
 
-        if (_val === '') _val = coll.defaultValue
+        if (_val === '') _val = col.defaultValue
 
-        if (coll.isOutOfRowTag) {
-          rowTemplate[coll.index] = _val
+        if (col.isOutOfRowTag) {
+          rowTemplate[col.index] = _val
         } else {
-          row[coll.index] = _val
+          row[col.index] = _val
         }
       }
     }
@@ -125,6 +125,6 @@ export const bindParsing = (
     }
   }
 
-  parser.setElemHanlder(rowStartHandler)
+  parser.setElemHandler(rowStartHandler)
   parser.setValueHandler(collectionValueHandler)
 }

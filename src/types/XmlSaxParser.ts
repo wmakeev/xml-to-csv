@@ -20,12 +20,12 @@ export interface XmlSaxParser {
    * Set element handler
    *
    * ```js
-   * parser.setElemHanlder((elPath, level) => {
+   * parser.setElemHandler((elPath, level) => {
    *   // ...
    * })
    * ```
    */
-  setElemHanlder(handler: XmlSaxParserElemHandler): this
+  setElemHandler(handler: XmlSaxParserElemHandler): this
 
   /**
    * Remove element handler

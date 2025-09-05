@@ -1,4 +1,4 @@
-import { XmlCsvMapping } from '../../src/index.js'
+import { XmlCsvMapping } from '../../../src/index.js'
 
 export const ymlMappings: Record<
   'currency' | 'category' | 'offer' | 'offerPhoto',
@@ -7,7 +7,7 @@ export const ymlMappings: Record<
   currency: {
     collection: 'yml_catalog/shop/currencies',
     row: 'yml_catalog/shop/currencies/currency',
-    colls: [
+    cols: [
       {
         name: 'Магазин',
         valuePath: 'yml_catalog/shop/name'
@@ -26,7 +26,7 @@ export const ymlMappings: Record<
   category: {
     collection: 'yml_catalog/shop/categories',
     row: 'yml_catalog/shop/categories/category',
-    colls: [
+    cols: [
       // {
       //   name: 'Магазин',
       //   valuePath: 'yml_catalog/shop/name'
@@ -57,7 +57,7 @@ export const ymlMappings: Record<
   offer: {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    colls: [
+    cols: [
       {
         name: 'Код',
         valuePath: 'yml_catalog/shop/offers/offer[id]'
@@ -216,7 +216,7 @@ export const ymlMappings: Record<
   offerPhoto: {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    colls: [
+    cols: [
       {
         name: 'Код',
         valuePath: 'yml_catalog/shop/offers/offer[id]'

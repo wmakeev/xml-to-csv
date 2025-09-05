@@ -12,8 +12,8 @@ import { pipeline } from 'node:stream/promises'
 import test from 'node:test'
 import { fetch } from 'undici'
 
-import { createXmlToCsvTransformer } from '../../src/index.js'
-import { ymlMappings } from './yml-mappings.js'
+import { createXmlToCsvTransformer } from '../../../src/index.js'
+import { ymlMappings } from './mappings.js'
 
 const createXmlReadableFromUrl = async (url: string) => {
   const xmlResponse = await fetch(url)
@@ -48,18 +48,20 @@ async function* rowsFlatten(src: AsyncGenerator<string[][]>) {
   }
 }
 
-test.skip('Load form url and parse #1', async () => {
+test('Load form url and parse #1', async () => {
   const PRICE_URL = 'https://dc-electro.ru/bitrix/catalog_export/export_EFo.xml'
 
   const composeWriteStream = (fileName: string) =>
     compose(rowsToCsv, createWriteStream(fileName))
+
+  const xmlReadable = await createXmlReadableFromUrl(PRICE_URL)
 
   for (const [key, mapping] of Object.entries(ymlMappings)) {
     const timeStart = Date.now()
 
     await pipeline(
       // Read source XML
-      await createXmlReadableFromUrl(PRICE_URL),
+      xmlReadable,
 
       // Create XML to CSV transformer
       createXmlToCsvTransformer(mapping),
@@ -101,7 +103,7 @@ test.skip('Per item stringify workflow #2', async () => {
   console.log(`* per item offer parsed (${duration}s)`) // 43s
 })
 
-test('Batch items stringify workflow #3', async () => {
+test.skip('Batch items stringify workflow #3', async () => {
   const PRICE_FILE = path.join(process.cwd(), '__temp/income/export_EFo.xml')
 
   const timeStart = Date.now()

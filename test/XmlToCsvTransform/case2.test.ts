@@ -35,7 +35,7 @@ test('createXmlToCsvTransformer #case2', async () => {
     createXmlToCsvTransformer({
       collection: 'Корень',
       row: 'Корень/Элемент',
-      colls: [
+      cols: [
         {
           name: 'Описание',
           valuePath: 'Корень/Элемент/Описание'

@@ -5,7 +5,7 @@ import mapValues from 'lodash.mapvalues'
 import {
   XmlCsvMapping,
   XmlCsvMappingInternal,
-  XmlCsvMappingInternalColl,
+  XmlCsvMappingInternalCol,
   XmlCsvMappingPredicateRecord
 } from './types.js'
 
@@ -33,48 +33,48 @@ export const getInternalCsvMapping = (
   // TODO Нужно подумать над конфигурацией или подробно описать почему она такая
   // какая есть; Возможно ввести полные и относительные пути, чтобы не дублировать пути.
 
-  const collsMappings_tmp1 = mapping.colls.map((coll, index) => {
+  const colsMappings_tmp1 = mapping.cols.map((col, index) => {
     const isInsideRowTag =
-      mapping.row === coll.valuePath ||
-      (coll.valuePath.startsWith(mapping.row) &&
-        [delimiter, '['].includes(coll.valuePath.at(mapping.row.length) ?? ''))
+      mapping.row === col.valuePath ||
+      (col.valuePath.startsWith(mapping.row) &&
+        [delimiter, '['].includes(col.valuePath.at(mapping.row.length) ?? ''))
 
-    const predicate = coll.predicate
-      ? predicates[coll.predicate.type]?.(coll.predicate as any)
+    const predicate = col.predicate
+      ? predicates[col.predicate.type]?.(col.predicate as any)
       : undefined
 
-    const aggregation: XmlCsvMappingInternalColl['aggregation'] =
-      coll.aggregation?.type === 'array'
+    const aggregation: XmlCsvMappingInternalCol['aggregation'] =
+      col.aggregation?.type === 'array'
         ? {
             type: 'array',
-            delimiter: coll.aggregation.delimiter ?? ',',
-            allowEmpty: coll.aggregation.allowEmpty ?? false
+            delimiter: col.aggregation.delimiter ?? ',',
+            allowEmpty: col.aggregation.allowEmpty ?? false
           }
-        : coll.aggregation ?? { type: 'last' }
+        : col.aggregation ?? { type: 'last' }
 
-    const val: XmlCsvMappingInternalColl = {
+    const val: XmlCsvMappingInternalCol = {
       index,
-      name: coll.name,
+      name: col.name,
       predicate,
-      defaultValue: coll.defaultValue ?? '',
+      defaultValue: col.defaultValue ?? '',
       isOutOfRowTag: !isInsideRowTag,
       aggregation
     }
 
-    const entry: [string, XmlCsvMappingInternalColl] = [coll.valuePath, val]
+    const entry: [string, XmlCsvMappingInternalCol] = [col.valuePath, val]
 
     return entry
   })
 
-  const collsMappings_tmp2 = groupBy(collsMappings_tmp1, ent => ent[0])
+  const colsMappings_tmp2 = groupBy(colsMappings_tmp1, ent => ent[0])
 
-  const collsMappings = mapValues(collsMappings_tmp2, arr => arr.map(a => a[1]))
+  const colsMappings = mapValues(colsMappings_tmp2, arr => arr.map(a => a[1]))
 
   const result = {
     collection: mapping.collection,
     row: mapping.row,
-    collsMappings,
-    collsNames: mapping.colls.map(c => c.name)
+    colsMappings: colsMappings,
+    colsNames: mapping.cols.map(c => c.name)
   }
 
   if (result.collection === result.row) {

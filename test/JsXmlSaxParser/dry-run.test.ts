@@ -8,7 +8,7 @@ const xmlFile = path.join(process.cwd(), '__temp/income/export_EFo.xml')
 
 const parser = new JsXmlSaxParser()
 
-parser.setElemHanlder(() => {})
+parser.setElemHandler(() => {})
 
 await parser.start()
 

@@ -23,8 +23,8 @@ export interface XmlCsvMapping {
   /** XML element contains row */
   row: string
 
-  colls: {
-    /** Csv collumn name */
+  cols: {
+    /** Csv column name */
     name: string
 
     /** XML element contains value */
@@ -54,7 +54,7 @@ export type XmlCsvMappingPredicate = (
   elPath: string
 ) => boolean
 
-export type XmlCsvMappingInternalColl = {
+export type XmlCsvMappingInternalCol = {
   index: number
   name: string
   predicate?: XmlCsvMappingPredicate | undefined
@@ -71,8 +71,8 @@ export interface XmlCsvMappingInternal {
   maxExpectedTablesCount?: number
   collection: string
   row: string
-  collsMappings: Record<string, XmlCsvMappingInternalColl[]>
-  collsNames: string[]
+  colsMappings: Record<string, XmlCsvMappingInternalCol[]>
+  colsNames: string[]
 }
 
 export type CsvRow = (string | undefined)[]

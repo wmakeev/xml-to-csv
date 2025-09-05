@@ -5,7 +5,7 @@ import { pipeline } from 'node:stream/promises'
 import test from 'node:test'
 
 import { createXmlToCsvTransformer } from '../../src/index.js'
-import { ymlMappings } from './yml-mappings.js'
+import { ymlMappings } from './case3/mappings.js'
 
 // Not to test (to estimate large XML parsing time)
 test('Large YML offers parsing', async () => {

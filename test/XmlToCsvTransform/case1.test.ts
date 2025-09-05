@@ -30,7 +30,7 @@ test('case1 (category)', async () => {
   const XML_TO_CSV_MAPPING: XmlCsvMapping = {
     collection: 'yml_catalog/shop/categories',
     row: 'yml_catalog/shop/categories/category',
-    colls: [
+    cols: [
       {
         name: 'Магазин',
         valuePath: 'yml_catalog/shop/name'
@@ -96,7 +96,7 @@ test('case1 (offers)', async () => {
   const XML_TO_CSV_MAPPING: XmlCsvMapping = {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    colls: [
+    cols: [
       {
         name: 'Магазин',
         valuePath: 'yml_catalog/shop/name'

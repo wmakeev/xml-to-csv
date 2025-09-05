@@ -8,7 +8,7 @@ test('sequence', async () => {
 
   const parser = new JsXmlSaxParser()
 
-  parser.setElemHanlder(el => {
+  parser.setElemHandler(el => {
     console.debug(`onElem: ${el}`)
   })
 

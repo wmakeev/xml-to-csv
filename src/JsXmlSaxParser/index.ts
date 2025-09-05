@@ -36,7 +36,7 @@ export class JsXmlSaxParser implements XmlSaxParser {
     return this.#parser === null
   }
 
-  setElemHanlder(handler: XmlSaxParserElemHandler) {
+  setElemHandler(handler: XmlSaxParserElemHandler) {
     this.#elemHandler = handler
     return this
   }
@@ -147,7 +147,7 @@ export class JsXmlSaxParser implements XmlSaxParser {
     }
 
     this.#parser.onerror = function () {
-      // TODO Как обработать? Провeрить в тестах с некорректным XML
+      // TODO Как обработать? Проверить в тестах с некорректным XML
       // console.debug(`Parser error - ${err.message}`)
     }
   }
