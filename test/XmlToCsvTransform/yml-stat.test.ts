@@ -34,7 +34,7 @@ test('Large YML offers parsing', async () => {
   await pipeline(
     // Read source XML
     createReadStream(path.join(process.cwd(), '__temp/income/export_EFo.xml'), {
-      // От размера чанка производительность в даннм тесте практически не зависит
+      // От размера chunk производительность в данном тесте практически не зависит
       highWaterMark: 512 * 1024,
       encoding: 'utf8'
     }),

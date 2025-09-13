@@ -5,7 +5,7 @@ import mapValues from 'lodash.mapvalues'
 import {
   XmlCsvMapping,
   XmlCsvMappingInternal,
-  XmlCsvMappingInternalCol,
+  XmlCsvMappingInternalColumn,
   XmlCsvMappingPredicateRecord
 } from './types.js'
 
@@ -27,32 +27,32 @@ const predicates: XmlCsvMappingPredicateRecord = {
  * Convert mapping to optimized internal form
  */
 export const getInternalCsvMapping = (
-  mapping: XmlCsvMapping,
-  delimiter: string
+  mapping: XmlCsvMapping
 ): XmlCsvMappingInternal => {
   // TODO Нужно подумать над конфигурацией или подробно описать почему она такая
   // какая есть; Возможно ввести полные и относительные пути, чтобы не дублировать пути.
 
-  const colsMappings_tmp1 = mapping.cols.map((col, index) => {
+  const colsMappings_tmp1 = mapping.columns.map((col, index) => {
     const isInsideRowTag =
       mapping.row === col.valuePath ||
-      (col.valuePath.startsWith(mapping.row) &&
-        [delimiter, '['].includes(col.valuePath.at(mapping.row.length) ?? ''))
+      col.valuePath.startsWith(`${mapping.row}/`)
 
     const predicate = col.predicate
       ? predicates[col.predicate.type]?.(col.predicate as any)
       : undefined
 
-    const aggregation: XmlCsvMappingInternalCol['aggregation'] =
-      col.aggregation?.type === 'array'
+    const aggregation: XmlCsvMappingInternalColumn['aggregation'] =
+      col.aggregation?.type === 'JOIN'
         ? {
-            type: 'array',
+            type: 'JOIN',
             delimiter: col.aggregation.delimiter ?? ',',
             allowEmpty: col.aggregation.allowEmpty ?? false
           }
-        : col.aggregation ?? { type: 'last' }
+        : col.aggregation?.type === 'ARRAY'
+          ? { type: 'ARRAY', allowEmpty: col.aggregation.allowEmpty ?? false }
+          : (col.aggregation ?? { type: 'LAST' })
 
-    const val: XmlCsvMappingInternalCol = {
+    const val: XmlCsvMappingInternalColumn = {
       index,
       name: col.name,
       predicate,
@@ -61,7 +61,7 @@ export const getInternalCsvMapping = (
       aggregation
     }
 
-    const entry: [string, XmlCsvMappingInternalCol] = [col.valuePath, val]
+    const entry: [string, XmlCsvMappingInternalColumn] = [col.valuePath, val]
 
     return entry
   })
@@ -73,8 +73,8 @@ export const getInternalCsvMapping = (
   const result = {
     collection: mapping.collection,
     row: mapping.row,
-    colsMappings: colsMappings,
-    colsNames: mapping.cols.map(c => c.name)
+    columnsMappings: colsMappings,
+    columnsNames: mapping.columns.map(c => c.name)
   }
 
   if (result.collection === result.row) {

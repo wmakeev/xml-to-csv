@@ -1,3 +1,14 @@
 colls
+Denkirs
 groupby
+instock
 mapvalues
+Maytoni
+oldprice
+onattribute
+oncdata
+onclosetag
+onopentagstart
+ontext
+UNIEL
+Баркод

@@ -7,13 +7,6 @@ export type XmlSaxParserValueHandler = (
 ) => void
 
 export interface XmlSaxParser {
-  /**
-   * XML paths delimiter.
-   *
-   * Default: `/`
-   */
-  getDelimiter(): string
-
   isStopped(): boolean
 
   /**

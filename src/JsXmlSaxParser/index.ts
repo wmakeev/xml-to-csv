@@ -6,7 +6,6 @@ import {
 } from '../types/XmlSaxParser.js'
 
 export interface JsXmlSaxParserOptions {
-  treeDelimiter?: string
   highWaterMark?: number
   debug?: boolean
 }
@@ -18,18 +17,10 @@ export class JsXmlSaxParser implements XmlSaxParser {
 
   #parser: SAXParser | null = null
 
-  delimiter = '/'
-
-  constructor(public options: JsXmlSaxParserOptions = {}) {
-    this.delimiter = options.treeDelimiter ?? this.delimiter
-  }
+  constructor(public options: JsXmlSaxParserOptions = {}) {}
 
   #hasHandlers() {
     return this.#elemHandler !== null || this.#valueHandler !== null
-  }
-
-  getDelimiter(): string {
-    return this.delimiter
   }
 
   isStopped() {
@@ -91,7 +82,7 @@ export class JsXmlSaxParser implements XmlSaxParser {
     let curElText: string[] = []
 
     this.#parser.onattribute = attr => {
-      const tagName = `${curElPath}[${attr.name}]`
+      const tagName = `${curElPath}/@${attr.name}`
 
       this.#elemHandler?.(
         //
@@ -112,7 +103,7 @@ export class JsXmlSaxParser implements XmlSaxParser {
     this.#parser.onopentagstart = tag => {
       tagsStack.push(tag.name)
 
-      curElPath = tagsStack.join(this.delimiter)
+      curElPath = tagsStack.join('/')
       curElText = []
 
       this.#elemHandler?.(
@@ -134,7 +125,7 @@ export class JsXmlSaxParser implements XmlSaxParser {
 
       tagsStack.pop()
 
-      curElPath = tagsStack.join(this.delimiter)
+      curElPath = tagsStack.join('/')
       curElText = []
     }
 
@@ -162,7 +153,7 @@ export class JsXmlSaxParser implements XmlSaxParser {
 
   stop() {
     if (this.isStopped() === true) {
-      console.log('Parser just stoped')
+      console.log('Parser just stopped')
       return
     }
 

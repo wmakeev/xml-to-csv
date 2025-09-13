@@ -125,6 +125,6 @@ test.skip('Batch items stringify workflow #3', async () => {
 
   const duration = (Date.now() - timeStart) / 1000
 
-  // Группировка по батчу работает в 2 раза быстрее
+  // Группировка по batch работает в 2 раза быстрее
   console.log(`* per item offer parsed (${duration}s)`) // 26s
 })

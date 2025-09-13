@@ -4,14 +4,14 @@ export const ymlMappings: Record<'offer', XmlCsvMapping> = {
   offer: {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    cols: [
+    columns: [
       {
         name: 'ID поставщика',
-        valuePath: 'yml_catalog/shop/offers/offer[id]'
+        valuePath: 'yml_catalog/shop/offers/offer/@id'
       },
       {
         name: 'Доступен',
-        valuePath: 'yml_catalog/shop/offers/offer[available]'
+        valuePath: 'yml_catalog/shop/offers/offer/@available'
       },
       {
         name: 'Бренд',
@@ -39,7 +39,7 @@ export const ymlMappings: Record<'offer', XmlCsvMapping> = {
       },
       {
         name: 'Остаток',
-        valuePath: 'yml_catalog/shop/offers/offer/outlets/outlet[instock]'
+        valuePath: 'yml_catalog/shop/offers/offer/outlets/outlet/@instock'
       },
       {
         name: 'Изображение',
@@ -55,7 +55,7 @@ export const ymlMappings: Record<'offer', XmlCsvMapping> = {
       },
       {
         name: 'Дата каталога',
-        valuePath: 'yml_catalog[date]'
+        valuePath: 'yml_catalog/@date'
       }
     ]
   }

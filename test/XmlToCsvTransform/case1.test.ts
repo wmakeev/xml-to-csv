@@ -30,22 +30,22 @@ test('case1 (category)', async () => {
   const XML_TO_CSV_MAPPING: XmlCsvMapping = {
     collection: 'yml_catalog/shop/categories',
     row: 'yml_catalog/shop/categories/category',
-    cols: [
+    columns: [
       {
         name: 'Магазин',
         valuePath: 'yml_catalog/shop/name'
       },
       {
         name: 'Код',
-        valuePath: 'yml_catalog/shop/categories/category[id]'
+        valuePath: 'yml_catalog/shop/categories/category/@id'
       },
       {
         name: 'Внешний код',
-        valuePath: 'yml_catalog/shop/categories/category[id]'
+        valuePath: 'yml_catalog/shop/categories/category/@id'
       },
       {
         name: 'Группа (Код)',
-        valuePath: 'yml_catalog/shop/categories/category[parentId]'
+        valuePath: 'yml_catalog/shop/categories/category/@parentId'
       },
       {
         name: 'Наименование',
@@ -96,18 +96,18 @@ test('case1 (offers)', async () => {
   const XML_TO_CSV_MAPPING: XmlCsvMapping = {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    cols: [
+    columns: [
       {
         name: 'Магазин',
         valuePath: 'yml_catalog/shop/name'
       },
       {
         name: 'ID',
-        valuePath: 'yml_catalog/shop/offers/offer[id]'
+        valuePath: 'yml_catalog/shop/offers/offer/@id'
       },
       {
         name: 'Код',
-        valuePath: 'yml_catalog/shop/offers/offer[id]'
+        valuePath: 'yml_catalog/shop/offers/offer/@id'
       },
       {
         name: 'Валюта',
@@ -122,7 +122,7 @@ test('case1 (offers)', async () => {
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'ID'
         }
       },
@@ -131,12 +131,12 @@ test('case1 (offers)', async () => {
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Штрихкод'
         }
       },
       {
-        name: 'Характеристика#2',
+        name: 'Характеристика (INDEX=1)',
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'index',
@@ -144,17 +144,24 @@ test('case1 (offers)', async () => {
         }
       },
       {
-        name: 'Характеристика#1',
+        name: 'Характеристика (FIRST)',
         valuePath: 'yml_catalog/shop/offers/offer/param',
         aggregation: {
-          type: 'first'
+          type: 'FIRST'
+        }
+      },
+      {
+        name: 'Характеристика (LAST)',
+        valuePath: 'yml_catalog/shop/offers/offer/param',
+        aggregation: {
+          type: 'LAST'
         }
       },
       {
         name: 'Наименования характеристик',
-        valuePath: 'yml_catalog/shop/offers/offer/param[name]',
+        valuePath: 'yml_catalog/shop/offers/offer/param/@name',
         aggregation: {
-          type: 'array',
+          type: 'JOIN',
           delimiter: ' | '
         }
       },
@@ -162,7 +169,7 @@ test('case1 (offers)', async () => {
         name: 'Значения характеристик',
         valuePath: 'yml_catalog/shop/offers/offer/param',
         aggregation: {
-          type: 'array'
+          type: 'ARRAY'
         }
       }
     ]
@@ -200,8 +207,9 @@ test('case1 (offers)', async () => {
         'Категория',
         'ID (param)',
         'Штрихкод',
-        'Характеристика#2',
-        'Характеристика#1',
+        'Характеристика (INDEX=1)',
+        'Характеристика (FIRST)',
+        'Характеристика (LAST)',
         'Наименования характеристик',
         'Значения характеристик'
       ],
@@ -215,8 +223,9 @@ test('case1 (offers)', async () => {
         '12345',
         '12345',
         '1',
+        '12345',
         'ID | Штрихкод',
-        '1,12345'
+        '["1","12345"]'
       ],
       [
         'dc-electro',
@@ -228,8 +237,9 @@ test('case1 (offers)', async () => {
         '12346',
         '2',
         '12346',
+        '2',
         'Штрихкод | ID',
-        '12346,2'
+        '["12346","2"]'
       ],
       [
         'dc-electro',
@@ -241,8 +251,9 @@ test('case1 (offers)', async () => {
         '12347',
         '12347',
         '2',
+        '12347',
         'ID | Штрихкод',
-        '2,12347'
+        '["2","12347"]'
       ]
     ],
     'should contain correct category csv'

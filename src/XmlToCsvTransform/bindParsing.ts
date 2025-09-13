@@ -9,7 +9,7 @@ import {
   XmlCsvMapping,
   XmlCsvMappingPredicateContext,
   XmlCsvMappingInternal,
-  XmlCsvMappingInternalCol
+  XmlCsvMappingInternalColumn
 } from './types.js'
 
 export const bindParsing = (
@@ -17,19 +17,16 @@ export const bindParsing = (
   parser: XmlSaxParser,
   mapping: XmlCsvMapping
 ) => {
-  const schema: XmlCsvMappingInternal = getInternalCsvMapping(
-    mapping,
-    parser.getDelimiter()
-  )
+  const schema: XmlCsvMappingInternal = getInternalCsvMapping(mapping)
 
-  const rowTemplate: Array<string | undefined> = schema.colsNames.map(
-    () => undefined
-  )
+  const rowTemplate: Array<string | undefined> = Array(
+    schema.columnsNames.length
+  ).fill(undefined)
 
   let row = [...rowTemplate]
 
   container.rows.push({
-    row: [...schema.colsNames],
+    row: [...schema.columnsNames],
     end: false
   })
 
@@ -47,37 +44,43 @@ export const bindParsing = (
     elValue
   ) => {
     // Process value before row complete logic in case where row tag contain text
-
     //#region Value
-    const curElemValues = (elemValuesMap.get(elPath) ?? []).concat([elValue])
+    let curElemValues = elemValuesMap.get(elPath)
 
-    elemValuesMap.set(elPath, curElemValues)
+    if (curElemValues === undefined) {
+      curElemValues = []
+      elemValuesMap.set(elPath, curElemValues)
+    }
+
+    curElemValues.push(elValue)
+
     elemIndexMap.set(elPath, (elemIndexMap.get(elPath) ?? -1) + 1)
 
-    const mappings = schema.colsMappings[elPath]
+    const mappings = schema.columnsMappings[elPath]
 
-    let cols: XmlCsvMappingInternalCol[] | undefined = undefined
+    let columns: XmlCsvMappingInternalColumn[] | undefined = undefined
 
     if (mappings !== undefined) {
-      cols = mappings.filter(
+      columns = mappings.filter(
         m => (m.predicate?.(ctx, elValue, elPath) ?? true) === true
       )
     }
 
     // Field value
-    if (cols !== undefined) {
-      for (let i = 0, len = cols.length; i < len; i++) {
-        const col = cols[i]
-        if (col === undefined) throw new Error('coll === undefined')
+    if (columns !== undefined) {
+      for (const col of columns) {
+        if (col === undefined) throw new Error('column === undefined')
 
         let _val
 
-        if (col.aggregation.type === 'first') {
+        if (col.aggregation.type === 'FIRST') {
           _val = curElemValues[0]
-        } else if (col.aggregation.type === 'last') {
+        } else if (col.aggregation.type === 'LAST') {
           _val = curElemValues[curElemValues.length - 1]
-        } else if (col.aggregation.type === 'array') {
+        } else if (col.aggregation.type === 'ARRAY') {
           // TODO coll.aggregation.allowEmpty
+          _val = JSON.stringify(curElemValues)
+        } else if (col.aggregation.type === 'JOIN') {
           _val = curElemValues.join(col.aggregation.delimiter)
         }
 

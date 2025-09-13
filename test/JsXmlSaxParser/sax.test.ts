@@ -1,16 +1,17 @@
+import sax from 'sax'
 import path from 'node:path'
-
-import { JsXmlSaxParser } from '../../src/JsXmlSaxParser/index.js'
 import { createReadStream } from 'node:fs'
 
 const xmlFile = path.join(process.cwd(), '__temp/income/export_EFo.xml')
-// const xmlFile = path.join(process.cwd(), 'test/cases/test.xml')
 
-const parser = new JsXmlSaxParser()
+const parser = sax.parser(true)
 
-parser.setElemHandler(() => {})
-
-await parser.start()
+parser.onattribute = () => {}
+parser.onopentagstart = () => {}
+parser.onclosetag = () => {}
+parser.ontext = () => {}
+parser.oncdata = () => {}
+parser.onerror = () => {}
 
 // stream from a file in the current directory
 const readable = createReadStream(xmlFile, {
@@ -23,7 +24,6 @@ console.time('Parsing')
 for await (const chunk of readable) {
   parser.write(chunk)
 }
+parser.close()
 
-parser.stop()
-
-console.timeEnd('Parsing') // 17s
+console.timeEnd('Parsing') // 13.5s

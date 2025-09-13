@@ -7,18 +7,18 @@ export const ymlMappings: Record<
   currency: {
     collection: 'yml_catalog/shop/currencies',
     row: 'yml_catalog/shop/currencies/currency',
-    cols: [
+    columns: [
       {
         name: 'Магазин',
         valuePath: 'yml_catalog/shop/name'
       },
       {
         name: 'ID',
-        valuePath: 'yml_catalog/shop/currencies/currency[id]'
+        valuePath: 'yml_catalog/shop/currencies/currency/@id'
       },
       {
         name: 'Курс',
-        valuePath: 'yml_catalog/shop/currencies/currency[rate]'
+        valuePath: 'yml_catalog/shop/currencies/currency/@rate'
       }
     ]
   },
@@ -26,7 +26,7 @@ export const ymlMappings: Record<
   category: {
     collection: 'yml_catalog/shop/categories',
     row: 'yml_catalog/shop/categories/category',
-    cols: [
+    columns: [
       // {
       //   name: 'Магазин',
       //   valuePath: 'yml_catalog/shop/name'
@@ -34,17 +34,17 @@ export const ymlMappings: Record<
 
       {
         name: 'Код',
-        valuePath: 'yml_catalog/shop/categories/category[id]'
+        valuePath: 'yml_catalog/shop/categories/category/@id'
       },
 
       {
         name: 'Внешний код',
-        valuePath: 'yml_catalog/shop/categories/category[id]'
+        valuePath: 'yml_catalog/shop/categories/category/@id'
       },
 
       {
         name: 'Группа (Код)',
-        valuePath: 'yml_catalog/shop/categories/category[parentId]'
+        valuePath: 'yml_catalog/shop/categories/category/@parentId'
       },
 
       {
@@ -57,15 +57,15 @@ export const ymlMappings: Record<
   offer: {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    cols: [
+    columns: [
       {
         name: 'Код',
-        valuePath: 'yml_catalog/shop/offers/offer[id]'
+        valuePath: 'yml_catalog/shop/offers/offer/@id'
       },
 
       {
         name: 'Внешний код',
-        valuePath: 'yml_catalog/shop/offers/offer[id]'
+        valuePath: 'yml_catalog/shop/offers/offer/@id'
       },
 
       {
@@ -78,7 +78,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Производитель'
         }
       },
@@ -136,7 +136,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Баркод WB'
         }
       },
@@ -146,7 +146,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Внешний код РС24'
         }
       },
@@ -156,7 +156,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Код 1-2'
         }
       },
@@ -166,7 +166,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Ячейка для склада'
         }
       },
@@ -176,7 +176,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'FBO OZON'
         }
       },
@@ -186,7 +186,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'FBO WB'
         }
       },
@@ -196,7 +196,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'Код ЭТМ'
         }
       },
@@ -206,7 +206,7 @@ export const ymlMappings: Record<
         valuePath: 'yml_catalog/shop/offers/offer/param',
         predicate: {
           type: 'equal',
-          path: 'yml_catalog/shop/offers/offer/param[name]',
+          path: 'yml_catalog/shop/offers/offer/param/@name',
           value: 'ID'
         }
       }
@@ -216,10 +216,10 @@ export const ymlMappings: Record<
   offerPhoto: {
     collection: 'yml_catalog/shop/offers',
     row: 'yml_catalog/shop/offers/offer',
-    cols: [
+    columns: [
       {
         name: 'Код',
-        valuePath: 'yml_catalog/shop/offers/offer[id]'
+        valuePath: 'yml_catalog/shop/offers/offer/@id'
       },
 
       {

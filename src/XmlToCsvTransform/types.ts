@@ -23,7 +23,7 @@ export interface XmlCsvMapping {
   /** XML element contains row */
   row: string
 
-  cols: {
+  columns: {
     /** Csv column name */
     name: string
 
@@ -37,9 +37,10 @@ export interface XmlCsvMapping {
 
     /** Should collect values as array */
     aggregation?:
-      | { type: 'first' }
-      | { type: 'last' }
-      | { type: 'array'; delimiter?: string; allowEmpty?: boolean }
+      | { type: 'FIRST' }
+      | { type: 'LAST' }
+      | { type: 'ARRAY'; allowEmpty?: boolean }
+      | { type: 'JOIN'; delimiter?: string; allowEmpty?: boolean }
   }[]
 }
 
@@ -54,25 +55,24 @@ export type XmlCsvMappingPredicate = (
   elPath: string
 ) => boolean
 
-export type XmlCsvMappingInternalCol = {
+export type XmlCsvMappingInternalColumn = {
   index: number
   name: string
   predicate?: XmlCsvMappingPredicate | undefined
   defaultValue: string
   isOutOfRowTag: boolean
   aggregation:
-    | { type: 'first' }
-    | { type: 'last' }
-    | { type: 'array'; delimiter: string; allowEmpty: boolean }
+    | { type: 'FIRST' }
+    | { type: 'LAST' }
+    | { type: 'ARRAY'; allowEmpty: boolean }
+    | { type: 'JOIN'; delimiter: string; allowEmpty: boolean }
 }
 
 export interface XmlCsvMappingInternal {
-  /** Maximum csv tables count that should be parsed from xml */
-  maxExpectedTablesCount?: number
   collection: string
   row: string
-  colsMappings: Record<string, XmlCsvMappingInternalCol[]>
-  colsNames: string[]
+  columnsMappings: Record<string, XmlCsvMappingInternalColumn[]>
+  columnsNames: string[]
 }
 
 export type CsvRow = (string | undefined)[]

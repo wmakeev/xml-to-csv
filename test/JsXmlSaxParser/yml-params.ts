@@ -12,7 +12,7 @@ const parser = new JsXmlSaxParser()
 const paramsMap = new Map()
 
 parser.setValueHandler((el, val) => {
-  if (el !== 'yml_catalog/shop/offers/offer/param[name]') return
+  if (el !== 'yml_catalog/shop/offers/offer/param/@name') return
 
   const count = paramsMap.get(val)
 
